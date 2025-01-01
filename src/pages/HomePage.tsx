@@ -11,8 +11,6 @@ import {
 import MovieList from '../components/MovieList';
 import Pagination from '../components/Pagination';
 
-const API_KEY = '621724f7'; // or use process.env if needed
-
 const HomePage: React.FC = () => {
     const dispatch = useAppDispatch();
 
@@ -31,13 +29,13 @@ const HomePage: React.FC = () => {
     // On first load OR when searchTerm, year, type changes: fetch new movies
     useEffect(() => {
         dispatch(setCurrentPage(1)); // reset page to 1
-        dispatch(fetchMovies({ page: 1, apikey: API_KEY }));
+        dispatch(fetchMovies({ page: 1 }));
     }, [searchTerm, year, type, dispatch]);
 
     // Handler for pagination changes
     const handlePageChange = (page: number) => {
         dispatch(setCurrentPage(page));
-        dispatch(fetchMovies({ page, apikey: API_KEY }));
+        dispatch(fetchMovies({ page }));
     };
 
     return (

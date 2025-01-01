@@ -5,7 +5,7 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchMovieDetail, resetSelectedMovie } from '../store/moviesSlice';
 
-const API_KEY = '621724f7';
+
 
 const DetailPage: React.FC = () => {
     const { imdbID } = useParams();
@@ -17,7 +17,7 @@ const DetailPage: React.FC = () => {
 
     useEffect(() => {
         if (imdbID) {
-            dispatch(fetchMovieDetail({ imdbID, apikey: API_KEY }));
+            dispatch(fetchMovieDetail({ imdbID }));
         }
         return () => {
             // Optional: clear out selectedMovie when unmounting

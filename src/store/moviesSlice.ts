@@ -1,43 +1,8 @@
 // store/moviesSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-
-interface Movie {
-  Title: string;
-  Year: string;
-  imdbID: string;
-  Type: string;
-  Poster: string;
-}
-
-interface MovieDetail {
-  Title: string;
-  Year: string;
-  Rated: string;
-  Released: string;
-  Runtime: string;
-  Genre: string;
-  Director: string;
-  Actors: string;
-  Plot: string;
-  Poster: string;
-  imdbRating: string;
-  imdbID: string;
-}
-
-// Slice State
-interface MoviesState {
-  searchTerm: string;
-  year: string;
-  type: string;
-  currentPage: number;
-  itemsPerPage: number;
-  movies: Movie[];
-  totalResults: number;
-  selectedMovie: MovieDetail | null;
-  loading: boolean;
-  error: string | null;
-}
+import { Movie, MovieDetail, MoviesState } from './types';
+import { RootState } from './index';
 
 // Initial State
 const initialState: MoviesState = {
@@ -53,21 +18,23 @@ const initialState: MoviesState = {
   error: null,
 };
 
+const API_KEY = '621724f7';
+
 // Thunk to fetch search results
 export const fetchMovies = createAsyncThunk<
   // Returned data shape
   { Search: Movie[]; totalResults: string },
   // Argument shape
-  { page?: number; apikey: string },
+  { page?: number},
   // ThunkAPI types
   { rejectValue: string }
 >('movies/fetchMovies', async (args, thunkAPI) => {
-  const state = thunkAPI.getState() as any; 
+  const state = thunkAPI.getState() as RootState; 
   const { movies } = state;
   try {
     const { data } = await axios.get('https://www.omdbapi.com/', {
       params: {
-        apikey: args.apikey, 
+        apikey: API_KEY, 
         s: movies.searchTerm,
         y: movies.year || undefined,
         type: movies.type || undefined,
@@ -81,21 +48,24 @@ export const fetchMovies = createAsyncThunk<
       Search: data.Search,
       totalResults: data.totalResults,
     };
-  } catch (err: any) {
-    return thunkAPI.rejectWithValue(err.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return thunkAPI.rejectWithValue(error.message);
+  }
+  return thunkAPI.rejectWithValue('An unknown error occurred');
   }
 });
 
 // Thunk to fetch movie detail by IMDb ID
 export const fetchMovieDetail = createAsyncThunk<
   MovieDetail,
-  { imdbID: string; apikey: string },
+  { imdbID: string},
   { rejectValue: string }
 >('movies/fetchMovieDetail', async (args, thunkAPI) => {
   try {
     const { data } = await axios.get('https://www.omdbapi.com/', {
       params: {
-        apikey: args.apikey,
+        apikey: API_KEY, 
         i: args.imdbID,
         plot: 'full',
       },
@@ -104,8 +74,11 @@ export const fetchMovieDetail = createAsyncThunk<
       return thunkAPI.rejectWithValue(data.Error || 'Movie not found.');
     }
     return data;
-  } catch (err: any) {
-    return thunkAPI.rejectWithValue(err.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return thunkAPI.rejectWithValue(error.message);
+  }
+  return thunkAPI.rejectWithValue('An unknown error occurred');
   }
 });
 
