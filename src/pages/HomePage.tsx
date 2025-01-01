@@ -1,5 +1,4 @@
-// HomePage.tsx
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
     setSearchTerm,
@@ -25,12 +24,6 @@ const HomePage: React.FC = () => {
         itemsPerPage,
         loading,
     } = useAppSelector((state) => state.movies);
-
-    // On first load OR when searchTerm, year, type changes: fetch new movies
-    useEffect(() => {
-        dispatch(setCurrentPage(1)); // reset page to 1
-        dispatch(fetchMovies({ page: 1 }));
-    }, [searchTerm, year, type, dispatch]);
 
     // Handler for pagination changes
     const handlePageChange = (page: number) => {

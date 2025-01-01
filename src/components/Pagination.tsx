@@ -1,6 +1,4 @@
-// Pagination.tsx
 import React from 'react';
-// Bootstrap icons or any icons from react-icons. Example:
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface PaginationProps {
