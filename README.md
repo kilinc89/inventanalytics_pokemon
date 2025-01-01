@@ -14,14 +14,13 @@ A React-based web application for searching and exploring Pokemon movies using t
 - Filter by year and type
 - Responsive grid layout
 - Pagination
-- Debounced search(Do not make api call on every type)
+- Debounced search(Debounced search prevents API calls from being made on every keystroke.)
 - Mobile-friendly design
 - Screens does not have business logic
-- Smooth scroll after page change
+- Smooth scrolling after a page change
 
 ## Installation
 
-```bash
 # Clone the repository
 git clone https://github.com/yourusername/inventanalytics_pokemon.git
 
