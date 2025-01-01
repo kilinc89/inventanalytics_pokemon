@@ -14,8 +14,10 @@ A React-based web application for searching and exploring Pokemon movies using t
 - Filter by year and type
 - Responsive grid layout
 - Pagination
-- Debounced search
+- Debounced search(Do not make api call on every type)
 - Mobile-friendly design
+- Screens does not have business logic
+- Smooth scroll after page change
 
 ## Installation
 

@@ -66,8 +66,10 @@ const DetailPage: React.FC = () => {
                 <div className="col-md-8">
                     <h2>{selectedMovie.Title}</h2>
                     <p className="mb-1"><strong>Year:</strong> {selectedMovie.Year}</p>
-                    <p className="mb-1"><strong>Runtime:</strong> {selectedMovie.Runtime}</p>
+                    <p className="mb-1"><strong>Duration:</strong> {selectedMovie.Runtime}</p>
                     <p className="mb-1"><strong>Genre:</strong> {selectedMovie.Genre}</p>
+                    <p className="mb-1"><strong>Language:</strong> {selectedMovie.Language}</p>
+                    <p className="mb-1"><strong>Type:</strong> {selectedMovie.Type}</p>
                     <p className="mb-1"><strong>Director:</strong> {selectedMovie.Director}</p>
                     <p className="mb-1"><strong>Actors:</strong> {selectedMovie.Actors}</p>
                     <p className="mb-3"><strong>IMDb Rating:</strong> {selectedMovie.imdbRating}</p>

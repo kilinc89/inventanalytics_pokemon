@@ -19,6 +19,8 @@ export interface Movie {
     Poster: string;
     imdbRating: string;
     imdbID: string;
+    Language: string;
+    Type: string;
   }
   
   // Slice State
