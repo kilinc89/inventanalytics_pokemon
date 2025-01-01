@@ -4,6 +4,8 @@ import axios from 'axios';
 import { Movie, MovieDetail, MoviesState } from './types';
 import { AppDispatch, RootState } from './index';
 
+
+
 // Initial State
 const initialState: MoviesState = {
   searchTerm: 'Pokemon',
@@ -16,13 +18,15 @@ const initialState: MoviesState = {
   selectedMovie: null,
   loading: false,
   error: null,
+  cache: {},
+  movieDetailCache: {}
 };
 
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 const API_URL = `https://www.omdbapi.com/?apikey=621724f7`;
 
 export const listenerMiddleware = createListenerMiddleware();
-
 
 listenerMiddleware.startListening.withTypes<RootState, AppDispatch>()({
   predicate: (_action, currentState, previousState) => {
@@ -30,35 +34,32 @@ listenerMiddleware.startListening.withTypes<RootState, AppDispatch>()({
       currentState.movies.currentPage !== previousState.movies.currentPage ||
       ((currentState.movies.year.length == 4 || currentState.movies.year.length == 0) && currentState.movies.year !== previousState.movies.year) ||
       currentState.movies.type !== previousState.movies.type;
-
   },
   effect: async (_action, listenerApi) => {
-    // listenerApi.dispatch(resetMovies());
     listenerApi.cancelActiveListeners();
-
     await listenerApi.delay(500);
-
     const response = await fetchMovies({});
     listenerApi.dispatch(response);
   },
 });
 
-
-
 // Thunk to fetch search results
 export const fetchMovies = createAsyncThunk<
-  // Returned data shape
-  { Search: Movie[]; totalResults: string },
-  // Argument shape
-  {
-    page?: number,
-    
-  },
-  // ThunkAPI types
+  { Search: Movie[]; totalResults: string; params: string },
+  { page?: number },
   { rejectValue: string }
 >('movies/fetchMovies', async (args, thunkAPI) => {
   const state = thunkAPI.getState() as RootState; 
   const { movies } = state;
+  const params = JSON.stringify({ searchTerm: movies.searchTerm, year: movies.year, type: movies.type, page: args.page || movies.currentPage });
+
+  // Check cache
+  const cachedData = movies.cache[params];
+  const now = Date.now();
+  if (cachedData && (now - cachedData.timestamp) < CACHE_DURATION) {
+    return cachedData.data;
+  }
+
   try {
     const { data } = await axios.get(API_URL, {
       params: {
@@ -67,7 +68,6 @@ export const fetchMovies = createAsyncThunk<
         ...(movies.type && { type: movies.type }),
         page: args.page || movies.currentPage,
       },
-
     });
     if (data.Response === 'False') {
       return thunkAPI.rejectWithValue(data.Error || 'No results.');
@@ -75,21 +75,32 @@ export const fetchMovies = createAsyncThunk<
     return {
       Search: data.Search,
       totalResults: data.totalResults,
+      params
     };
   } catch (error: unknown) {
     if (error instanceof Error) {
       return thunkAPI.rejectWithValue(error.message);
-  }
-  return thunkAPI.rejectWithValue('An unknown error occurred');
+    }
+    return thunkAPI.rejectWithValue('An unknown error occurred');
   }
 });
 
 // Thunk to fetch movie detail by IMDb ID
 export const fetchMovieDetail = createAsyncThunk<
   MovieDetail,
-  { imdbID: string},
+  { imdbID: string },
   { rejectValue: string }
 >('movies/fetchMovieDetail', async (args, thunkAPI) => {
+  const state = thunkAPI.getState() as RootState;
+  const { movieDetailCache } = state.movies;
+
+  // Check cache
+  const cachedData = movieDetailCache[args.imdbID];
+  const now = Date.now();
+  if (cachedData && (now - cachedData.timestamp) < CACHE_DURATION) {
+    return cachedData.data;
+  }
+
   try {
     const { data } = await axios.get(API_URL, {
       params: {
@@ -104,17 +115,15 @@ export const fetchMovieDetail = createAsyncThunk<
   } catch (error: unknown) {
     if (error instanceof Error) {
       return thunkAPI.rejectWithValue(error.message);
-  }
-  return thunkAPI.rejectWithValue('An unknown error occurred');
+    }
+    return thunkAPI.rejectWithValue('An unknown error occurred');
   }
 });
-
 
 export const initialFetch = createAsyncThunk(
   'movies/initialFetch',
   async (_, thunkAPI) => {
     try {
-        
       await thunkAPI.dispatch(fetchMovies({ page: 1 }));
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -129,7 +138,6 @@ export const moviesSlice = createSlice({
   name: 'movies',
   initialState,
   reducers: {
-    // For updating local search/filter in Redux
     setSearchTerm(state, action: PayloadAction<string>) {
       state.searchTerm = action.payload;
     },
@@ -145,9 +153,11 @@ export const moviesSlice = createSlice({
     resetSelectedMovie(state) {
       state.selectedMovie = null;
     },
+    clearCache(state) {
+      state.cache = {};
+    }
   },
   extraReducers: (builder) => {
-    // fetchMovies
     builder.addCase(fetchMovies.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -156,13 +166,19 @@ export const moviesSlice = createSlice({
       state.loading = false;
       state.movies = action.payload.Search;
       state.totalResults = parseInt(action.payload.totalResults, 10) || 0;
+      state.cache[action.payload.params] = {
+        data: {
+          Search: action.payload.Search,
+          totalResults: action.payload.totalResults
+        },
+        timestamp: Date.now(),
+        params: action.payload.params
+      };
     });
     builder.addCase(fetchMovies.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload || 'Something went wrong fetching movies.';
     });
-
-    // fetchMovieDetail
     builder.addCase(fetchMovieDetail.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -170,23 +186,28 @@ export const moviesSlice = createSlice({
     builder.addCase(fetchMovieDetail.fulfilled, (state, action) => {
       state.loading = false;
       state.selectedMovie = action.payload;
+      state.movieDetailCache[action.meta.arg.imdbID] = {
+        data: action.payload,
+        timestamp: Date.now()
+      };
     });
     builder.addCase(fetchMovieDetail.rejected, (state, action) => {
       state.loading = false;
-      state.error =
-        action.payload || 'Something went wrong fetching movie detail.';
+      state.error = action.payload || 'Something went wrong fetching movie detail.';
     });
   },
 });
 
-// Export the action creators
 export const {
   setSearchTerm,
   setYear,
   setType,
   setCurrentPage,
   resetSelectedMovie,
+  clearCache
 } = moviesSlice.actions;
+
+export default moviesSlice.reducer;
 
 
 

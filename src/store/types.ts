@@ -22,7 +22,13 @@ export interface Movie {
     Language: string;
     Type: string;
   }
-  
+  // Cache interface
+  export interface CacheItem {
+    data: any;
+    timestamp: number;
+    params?: string;
+  }
+
   // Slice State
   export interface MoviesState {
     searchTerm: string;
@@ -35,4 +41,6 @@ export interface Movie {
     selectedMovie: MovieDetail | null;
     loading: boolean;
     error: string | null;
+    cache: Record<string, CacheItem>;
+    movieDetailCache: Record<string, CacheItem>;
   }
