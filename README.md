@@ -20,7 +20,7 @@ A React-based web application for searching and exploring Pokemon movies using t
 - Smooth scrolling after a page change *
 - Added custom cache mechanism to reduce api call to server *
 
-* added as extra
+    note: * added as extra feature
 
 
 ## Installation
