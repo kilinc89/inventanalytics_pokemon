@@ -11,7 +11,6 @@ import Pagination from '../components/Pagination';
 const HomePage = () => {
     const dispatch = useAppDispatch();
 
-    // Grab relevant pieces from store
     const {
         searchTerm,
         year,
@@ -53,7 +52,7 @@ const HomePage = () => {
                         <input
                             type="text"
                             className="form-control"
-                            placeholder="Year (e.g. 2021)"
+                            placeholder="Year"
                             value={year}
                             onChange={(e) => dispatch(setYear(e.target.value))}
                         />
