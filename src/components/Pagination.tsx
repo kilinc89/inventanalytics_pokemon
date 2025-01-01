@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface PaginationProps {
@@ -8,7 +8,7 @@ interface PaginationProps {
     onPageChange: (page: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({
+const Pagination: FC<PaginationProps> = ({
     currentPage,
     totalResults,
     itemsPerPage,

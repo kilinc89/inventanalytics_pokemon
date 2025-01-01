@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchMovieDetail, resetSelectedMovie } from '../store/moviesSlice';
 
 
-const DetailPage: React.FC = () => {
+const DetailPage = () => {
     const { imdbID } = useParams();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();

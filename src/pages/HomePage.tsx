@@ -1,4 +1,3 @@
-import React from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
     setSearchTerm,
@@ -9,7 +8,7 @@ import {
 import MovieList from '../components/MovieList';
 import Pagination from '../components/Pagination';
 
-const HomePage: React.FC = () => {
+const HomePage = () => {
     const dispatch = useAppDispatch();
 
     // Grab relevant pieces from store

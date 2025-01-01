@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import './MovieList.scss';
 
@@ -14,7 +14,7 @@ interface MovieListProps {
     movies: Movie[];
 }
 
-const MovieList: React.FC<MovieListProps> = ({ movies }) => {
+const MovieList: FC<MovieListProps> = ({ movies }) => {
     return (
         <div className="movie-grid">
             {movies.map((movie) => (
