@@ -15,17 +15,14 @@ const Pagination: React.FC<PaginationProps> = ({
     onPageChange
 }) => {
     // Decide how many page numbers to display in one chunk
-    const PAGES_TO_SHOW = 5;
+    //if mobile show 5 pages, else show 10 pages
+    const PAGES_TO_SHOW = window.innerWidth <= 768 ? 5 : 10;
 
     // Calculate the total number of pages
     const totalPages = Math.ceil(totalResults / itemsPerPage);
     if (totalPages <= 1) return null; // No need for pagination
 
-    /**
-     * Figure out which chunk we're currently in, based on currentPage.
-     * If currentPage=7 and PAGES_TO_SHOW=5, for example:
-     *   chunkIndex = floor((7-1)/5) = floor(6/5) = 1 (the "second chunk")
-     */
+    //Figure out which chunk we're currently in, based on currentPage.
     const currentChunkIndex = Math.floor((currentPage - 1) / PAGES_TO_SHOW);
 
     // The first page in the current chunk
@@ -40,12 +37,11 @@ const Pagination: React.FC<PaginationProps> = ({
     );
 
     // Determine if there's a previous chunk and a next chunk
-    const hasPrevChunk = chunkStart > 1;                 // chunkStart would be at least 6 if there's a previous chunk
-    const hasNextChunk = chunkEnd < totalPages;          // chunkEnd < totalPages means there's another chunk ahead
+    const hasPrevChunk = chunkStart > 1;
+    const hasNextChunk = chunkEnd < totalPages;
 
     // Handlers for skipping to previous or next chunk
     const handlePrevChunk = () => {
-        // Jump back 1 chunk
         const newPage = chunkStart - PAGES_TO_SHOW;
         // If that goes below 1, just jump to page 1
         onPageChange(newPage < 1 ? 1 : newPage);
@@ -78,7 +74,7 @@ const Pagination: React.FC<PaginationProps> = ({
                 {hasPrevChunk && (
                     <li className="page-item">
                         <button className="page-link" onClick={handlePrevChunk}>
-                            « Prev 5
+                            « Prev {PAGES_TO_SHOW}
                         </button>
                     </li>
                 )}
@@ -116,7 +112,7 @@ const Pagination: React.FC<PaginationProps> = ({
                 {hasNextChunk && (
                     <li className="page-item">
                         <button className="page-link" onClick={handleNextChunk}>
-                            Next 5 »
+                            Next {PAGES_TO_SHOW} »
                         </button>
                     </li>
                 )}

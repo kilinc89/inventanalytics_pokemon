@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchMovieDetail, resetSelectedMovie } from '../store/moviesSlice';
 
 
-
 const DetailPage: React.FC = () => {
     const { imdbID } = useParams();
     const navigate = useNavigate();
@@ -19,7 +18,6 @@ const DetailPage: React.FC = () => {
             dispatch(fetchMovieDetail({ imdbID }));
         }
         return () => {
-            // Optional: clear out selectedMovie when unmounting
             dispatch(resetSelectedMovie());
         };
     }, [imdbID, dispatch]);

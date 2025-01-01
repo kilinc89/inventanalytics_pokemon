@@ -5,7 +5,6 @@ import {
     setYear,
     setType,
     setCurrentPage,
-    fetchMovies,
 } from '../store/moviesSlice';
 import MovieList from '../components/MovieList';
 import Pagination from '../components/Pagination';
@@ -25,10 +24,15 @@ const HomePage: React.FC = () => {
         loading,
     } = useAppSelector((state) => state.movies);
 
-    // Handler for pagination changes
+
     const handlePageChange = (page: number) => {
+        //on page change scroll to top
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+        // Update the currentPage in the store
         dispatch(setCurrentPage(page));
-        dispatch(fetchMovies({ page }));
     };
 
     return (

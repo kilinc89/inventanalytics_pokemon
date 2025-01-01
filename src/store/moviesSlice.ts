@@ -27,7 +27,7 @@ export const listenerMiddleware = createListenerMiddleware();
 listenerMiddleware.startListening.withTypes<RootState, AppDispatch>()({
   predicate: (_action, currentState, previousState) => {
     return currentState.movies.searchTerm !== previousState.movies.searchTerm ||
-      // //year must be 4 digits or empty
+      currentState.movies.currentPage !== previousState.movies.currentPage ||
       ((currentState.movies.year.length == 4 || currentState.movies.year.length == 0) && currentState.movies.year !== previousState.movies.year) ||
       currentState.movies.type !== previousState.movies.type;
 
