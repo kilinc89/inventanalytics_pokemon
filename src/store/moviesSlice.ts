@@ -51,10 +51,10 @@ export const fetchMovies = createAsyncThunk<
 >('movies/fetchMovies', async (args, thunkAPI) => {
   const state = thunkAPI.getState() as RootState; 
   const { movies } = state;
-  const params = JSON.stringify({ searchTerm: movies.searchTerm, year: movies.year, type: movies.type, page: args.page || movies.currentPage });
+  const cacheParams = JSON.stringify({ searchTerm: movies.searchTerm, year: movies.year, type: movies.type, page: args.page || movies.currentPage });
 
   // Check cache
-  const cachedData = movies.cache[params];
+  const cachedData = movies.cache[cacheParams];
   const now = Date.now();
   if (cachedData && (now - cachedData.timestamp) < CACHE_DURATION) {
     return cachedData.data;
@@ -75,7 +75,7 @@ export const fetchMovies = createAsyncThunk<
     return {
       Search: data.Search,
       totalResults: data.totalResults,
-      params
+      params:cacheParams
     };
   } catch (error: unknown) {
     if (error instanceof Error) {
