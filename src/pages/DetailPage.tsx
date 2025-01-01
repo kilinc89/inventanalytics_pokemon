@@ -10,10 +10,10 @@ const DetailPage = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    // Access the selected movie & loading state from Redux
     const { selectedMovie, loading, error } = useAppSelector((state) => state.movies);
 
     useEffect(() => {
+        //make api call to get movie details
         if (imdbID) {
             dispatch(fetchMovieDetail({ imdbID }));
         }
