@@ -22,7 +22,7 @@ A React-based web application for searching and exploring Pokemon movies using t
 ## Installation
 
 # Clone the repository
-git clone https://github.com/yourusername/inventanalytics_pokemon.git
+git clone https://github.com/kilinc89/inventanalytics_pokemon.git
 
 # Navigate to project directory
 cd inventanalytics_pokemon
